@@ -32,11 +32,21 @@ namespace Middleware
                 await context.Response.WriteAsync("Hello from the component one RESPONSE!\n");
             });
 
+            app.UseMyMiddleWare();
+
             app.Map("/mymapbranch", (appBuilder) =>
             {
-                appBuilder.Use(async (context, next) =>
+                appBuilder.Run(async (context) =>
                 {
-                    await next.Invoke();
+                    await context.Response.WriteAsync("Greeting from my MAP!\n");
+                });
+            });
+
+            app.MapWhen(context => context.Request.Query.ContainsKey("querybranch"), (appBuilder) =>
+            {
+                appBuilder.Run(async (context) =>
+                {
+                    await context.Response.WriteAsync("You have arrived at your Map When Branch!");
                 });
             });
 

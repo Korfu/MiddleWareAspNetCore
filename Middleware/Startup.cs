@@ -20,14 +20,29 @@ namespace Middleware
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
+            //if (env.IsDevelopment())
+            //{
+            //    app.UseDeveloperExceptionPage();
+            //}
+
+            app.Use(async (context, next) =>
             {
-                app.UseDeveloperExceptionPage();
-            }
+                await context.Response.WriteAsync("Hello from component one!\n");
+                await next.Invoke();
+                await context.Response.WriteAsync("Hello from the component one RESPONSE!\n");
+            });
+
+            app.Map("/mymapbranch", (appBuilder) =>
+            {
+                appBuilder.Use(async (context, next) =>
+                {
+                    await next.Invoke();
+                });
+            });
 
             app.Run(async (context) =>
             {
-                await context.Response.WriteAsync("Hello World!");
+                await context.Response.WriteAsync("Hello World!\n");
             });
         }
     }
